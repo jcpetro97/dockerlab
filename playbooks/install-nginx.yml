@@ -1,0 +1,12 @@
+- name: Install Nginx on test nodes
+  hosts: testnodes
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
