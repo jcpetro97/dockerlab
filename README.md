@@ -96,9 +96,17 @@ ansible-playbook -i inventory.ini playbooks/install-nginx.yml -l alma
 docker-compose down
 ```
 
+### 7. ToDo
+- Create a docker-compose file that has all of the nodes for both Ubuntu and Alma
+
 ## 🛠 Default Credentials
 ```
 Username: ansibletest
 Password: ansibletest
 Privilege: sudo enabled
 ```
+
+
+## Author
+- Original lab created by [AKI1620](https://github.com/AKI1620/ansible-docker-lab)
+- Customized by [John Petro](https://github.com/jcpetro97)
