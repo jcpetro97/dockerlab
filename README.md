@@ -1,4 +1,4 @@
-# ansible-docker-lab
+# Docker Lab
 Small Ansible lab using Docker containers as SSH-enabled test nodes. Use containers to test whatever you need, whether it's ansible based or not.
 
 # About
@@ -61,8 +61,11 @@ bash build-alma9.sh
 # Ubuntu
 docker-compose -f docker-compose.ubuntu.yml up -d
 
-# alma
+# Alma
 docker-compose -f docker-compose.alma.yml up -d
+
+# both Ubuntu and Alma
+docker-compose up -d
 ```
 
 You now have 3 ubuntu nodes running at:
@@ -83,21 +86,27 @@ ssh ansibletest@10.171.0.11
 
 ### 5. Run an Ansible playbook
 ```bash
-# for ubuntu
+# for Ubuntu
 ansible-playbook -i inventory.ini playbooks/install-nginx.yml -l ubuntu
 
-# for alma
+# for Alma
 ansible-playbook -i inventory.ini playbooks/install-nginx.yml -l alma 
 
+# for both Ubuntu and Alma
+ansible-playbook -i inventory.ini playbooks/install-nginx.yml
 ```
 
 ### 6. Tear down
 ```bash
+# Ubuntu
+docker-compose -f docker-compose.ubuntu.yml down 
+
+# Alma
+docker-compose -f docker-compose.ubuntu.yml down
+
+# Ubuntu AND Alma
 docker-compose down
 ```
-
-### 7. ToDo
-- Create a docker-compose file that has all of the nodes for both Ubuntu and Alma
 
 ## 🛠 Default Credentials
 ```

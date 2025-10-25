@@ -1,0 +1,94 @@
+version: '3.9'
+
+services:
+  ubuntu1:
+    image: ansibletest-ubuntu:latest
+    container_name: ubuntu1
+    hostname: node1
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    # ports:
+    #   - "2122:22"
+    networks:
+      dockerlab-net:
+        ipv4_address: 10.171.0.11
+    privileged: true
+    tty: true
+    restart: unless-stopped
+  ubuntu2:
+    image: ansibletest-ubuntu:latest
+    container_name: ubuntu2
+    hostname: node2
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    # ports:
+    #   - "2122:22"
+    networks:
+      dockerlab-net:
+        ipv4_address: 10.171.0.12
+    privileged: true
+    tty: true
+    restart: unless-stopped
+  ubuntu3:
+    image: ansibletest-ubuntu:latest
+    container_name: ubuntu3
+    hostname: node3
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    # ports:
+    #   - "2122:22"
+    networks:
+      dockerlab-net:
+        ipv4_address: 10.171.0.13
+    privileged: true
+    tty: true
+    restart: unless-stopped
+  alma1:
+    image: ansibletest-alma:latest
+    container_name: alma1
+    hostname: node1
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    # ports:
+    #   - "2222:22"
+    networks:
+      dockerlab-net:
+        ipv4_address: 10.171.0.21
+    privileged: true
+    tty: true
+    restart: unless-stopped
+  alma2:
+    image: ansibletest-alma:latest
+    container_name: alma2
+    hostname: node2
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    # ports:
+    #   - "2222:22"
+    networks:
+      dockerlab-net:
+        ipv4_address: 10.171.0.22
+    privileged: true
+    tty: true
+    restart: unless-stopped
+  alma3:
+    image: ansibletest-alma:latest
+    container_name: alma3
+    hostname: node3
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    # ports:
+    #   - "2222:22"
+    networks:
+      dockerlab-net:
+        ipv4_address: 10.171.0.23
+    privileged: true
+    tty: true
+    restart: unless-stopped
+
+networks:
+  dockerlab-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.171.0.0/24
