@@ -1,0 +1,63 @@
+FROM ubuntu:24.04
+LABEL maintainer="John Petro"
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+      openssh-server \
+      passwd \
+      sudo \
+      man-db \
+      curl \
+      wget \
+      gpg-agent \
+      vim-tiny \
+      apt-utils \
+      build-essential \
+      locales \
+      libffi-dev \
+      libssl-dev \
+      libyaml-dev \
+      software-properties-common \
+      rsyslog systemd systemd-cron sudo iproute2 \
+    && apt-get clean \
+    && rm -Rf /var/lib/apt/lists/* \
+    && rm -Rf /usr/share/doc && rm -Rf /usr/share/man
+RUN sed -i 's/^\($ModLoad imklog\)/#\1/' /etc/rsyslog.conf
+
+
+# Fix potential UTF-8 errors with ansible-test.
+RUN locale-gen en_US.UTF-8
+
+# Enable systemd
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+    rm -f /lib/systemd/system/multi-user.target.wants/*; \
+    rm -f /etc/systemd/system/*.wants/*; \
+    rm -f /lib/systemd/system/local-fs.target.wants/*; \
+    rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+    rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+    rm -f /lib/systemd/system/basic.target.wants/*; \
+    rm -f /lib/systemd/system/anaconda.target.wants/*;
+
+# Create the ansibletest user
+RUN useradd -m -G sudo -s /bin/bash ansibletest && \
+    echo "ansibletest:ansibletest" | chpasswd && \
+    echo 'ansibletest ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/ansibletest && \
+    chmod 440 /etc/sudoers.d/ansibletest
+
+
+# Remove unnecessary getty and udev targets that result in high CPU usage when using
+# multiple containers with Molecule (https://github.com/ansible/molecule/issues/1104)
+RUN rm -f /lib/systemd/system/systemd*udev* \
+  && rm -f /lib/systemd/system/getty.target
+
+# --- Enable SSH service so systemd starts it automatically ---
+RUN systemctl enable ssh.service
+
+# Expose SSH port
+EXPOSE 22
+
+VOLUME ["/sys/fs/cgroup", "/tmp", "/run"]
+CMD ["/lib/systemd/systemd"]

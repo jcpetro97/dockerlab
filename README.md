@@ -1,9 +1,9 @@
 # ansible-docker-lab
-Lightweight Ansible lab using Docker containers as SSH-enabled test nodes. Spin up disposable “servers” locally to test roles, playbooks, and automation without needing real VMs.
+Small Ansible lab using Docker containers as SSH-enabled test nodes. Use containers to test whatever you need, whether it's ansible based or not.
 
 # About
 - This project provides a ready-to-use environment for testing Ansible locally with Docker.
-- Build an Ubuntu-based image with SSH preconfigured
+- Build an Ubuntu-based image or an Alma0-based image with SSH preconfigured
 - Use docker-compose to launch multiple nodes with static IPs
 - Connect via Ansible using inventory.ini (user + password)
 - Run and test playbooks exactly as you would on real servers
@@ -12,59 +12,93 @@ Lightweight Ansible lab using Docker containers as SSH-enabled test nodes. Spin 
 
 # File Structure
 ```
-ansible-docker-lab/
+DockerLab/
+├── build-alma9.sh
 ├── build.sh
-├── Dockerfile
-├── docker-compose.yml
+├── build-ubuntu2404.sh
+├── build-ubuntu2510.sh
+├── docker-compose.alma.yml
+├── docker-compose.ubuntu.yml
+├── Dockerfile-alma9
+├── Dockerfile-ubuntu2404
+├── Dockerfile-ubuntu2510
 ├── inventory.ini
-├── playbooks/
+├── playbooks
 │   └── install-nginx.yml
-├── README.md
+└── README.md
 ```
 
 # Usage Guide
-This repo demonstrates how to use Docker containers as lightweight Ansible test nodes.
 
 ## 🚀 Quick Start
 
 ### 1. Build the SSH-enabled Ubuntu image
 ```bash
-docker build --no-cache -t sshimage:uat .
+docker build -f Dockerfile-ubuntu2404 --no-cache -t ansibletest-ubuntu:latest .
+or
+docker build -f Dockerfile-ubuntu2510 --no-cache -t ansibletest-ubuntu:latest .
 
 # [or] use the build.sh script provided
 
-bash build.sh
+bash build-ubuntu2404.sh
+or
+bash build-ubuntu2510.sh
 ```
 
-### 2. Start the test nodes
+### 2. Build the SSH-enabled Alma image
 ```bash
-docker-compose up -d
+docker build -f Dockerfile-alma9 --no-cache -t ansibletest-alma:latest .
+
+# [or] use the build.sh script provided
+
+bash build-alma9.sh
 ```
 
-You now have 3 nodes running at:
-- `10.20.0.10`
-- `10.20.0.11`
-- `10.20.0.12`
+*NOTE:* You can build a ubuntu image and alma image at once using `build.sh`
 
-### 3. Verify SSH connectivity
+### 3. Start the test nodes
 ```bash
-ssh appuser@10.20.0.10
-# password: Admin@123
+# Ubuntu
+docker-compose -f docker-compose.ubuntu.yml up -d
+
+# alma
+docker-compose -f docker-compose.alma.yml up -d
 ```
 
-### 4. Run an Ansible playbook
+You now have 3 ubuntu nodes running at:
+- `10.171.0.11`
+- `10.171.0.12`
+- `10.171.0.13`
+
+alma nodes will be running at:
+- `10.171.0.21`
+- `10.171.0.22`
+- `10.171.0.23`
+
+### 4. Verify SSH connectivity
 ```bash
-ansible-playbook -i inventory.ini playbooks/install-nginx.yml
+ssh ansibletest@10.171.0.11
+# password: ansibletest
 ```
 
-### 5. Tear down
+### 5. Run an Ansible playbook
+```bash
+# for ubuntu
+ansible-playbook -i inventory.ini playbooks/install-nginx.yml -l ubuntu
+
+# for alma
+ansible-playbook -i inventory.ini playbooks/install-nginx.yml -l alma 
+
+```
+
+### 6. Tear down
 ```bash
 docker-compose down
 ```
 
 ## 🛠 Default Credentials
 ```
-Username: appuser
-Password: Admin@123
+Username: ansibletest
+Password: ansibletest
 Privilege: sudo enabled
 ```

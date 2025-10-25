@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+  alma1:
+    image: ansibletest-alma:latest
+    container_name: alma1
+    hostname: node1
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    # ports:
+    #   - "2222:22"
+    networks:
+      dockerlab-net:
+        ipv4_address: 10.171.0.21
+    privileged: true
+    tty: true
+    restart: unless-stopped
+  
+  alma2:
+    image: ansibletest-alma:latest
+    container_name: alma2
+    hostname: node2
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    # ports:
+    #   - "2222:22"
+    networks:
+      dockerlab-net:
+        ipv4_address: 10.171.0.22
+    privileged: true
+    tty: true
+    restart: unless-stopped
+  
+  alma3:
+    image: ansibletest-alma:latest
+    container_name: alma3
+    hostname: node3
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    # ports:
+    #   - "2222:22"
+    networks:
+      dockerlab-net:
+        ipv4_address: 10.171.0.23
+    privileged: true
+    tty: true
+    restart: unless-stopped
+
+networks:
+  dockerlab-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.171.0.0/24
